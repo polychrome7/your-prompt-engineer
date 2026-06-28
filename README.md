@@ -2,7 +2,7 @@
 
 Turn rough asks into agent-ready work.
 
-Your Prompt Engineer is a prompt handoff layer for Codex and Claude Code agents. It turns rough requests into dispatch-ready prompts with target checks, agent routing, confirmation, and safety gates.
+Your Prompt Engineer is a prompt handoff layer for Codex, Claude Code, and compatible agent hosts. It turns rough requests into dispatch-ready prompts with target checks, agent routing, confirmation, and safety gates.
 
 It is for people who think in natural language first, then want a safer, clearer handoff to an explorer, worker, or task agent.
 
@@ -66,7 +66,8 @@ It adds a consistent process around prompt handoff:
 - target validation before writing a prompt
 - scout-first routing for vague tasks
 - explorer/worker/default agent selection
-- host-specific Codex and Claude Code prompt patterns
+- first-class Codex and Claude Code prompt patterns
+- graceful fallback for compatible agent hosts
 - confirmation before dispatch
 - safety gates for risky work
 
@@ -79,6 +80,8 @@ Use $your-prompt-engineer Write a prompt for an agent to inspect this project fo
 ```
 
 Natural-language invocation may work in hosts that support implicit personal skill discovery, but it is not guaranteed. If the host does not load the skill implicitly, it may simply answer as a normal agent.
+
+Codex and Claude Code are first-class targets. Other compatible hosts can still use the prepared prompt and confirmation workflow; automatic dispatch depends on whether the host exposes a native delegation tool.
 
 ## Installation
 
@@ -179,13 +182,13 @@ Which project should the agent inspect? Please provide a project path, repositor
 ## Limitations
 
 - The skill cannot create UI controls by itself. It can only ask the host to use native choices when the host supports them.
-- Automatic dispatch depends on the host exposing tools such as Codex multi-agent tools or Claude Code task/subagent tools.
+- Automatic dispatch depends on the host exposing tools such as Codex multi-agent tools, Claude Code task/subagent tools, or another native delegation mechanism.
 - Natural-language implicit triggering is host-dependent. Explicit `$your-prompt-engineer` invocation is the reliable path.
 - If no dispatch tool is available, the skill should output the prepared prompt and explain that automatic dispatch is unavailable in the current host.
 
 ## Roadmap
 
-- Add more host adapter guidance.
+- Add more first-class host adapter guidance.
 - Expand Claude Code task prompt examples.
 - Add compact and verbose confirmation modes.
 - Collect community prompt recipes for common workflows.

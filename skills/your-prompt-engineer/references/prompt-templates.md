@@ -201,6 +201,47 @@ Prefer compact, structured prompts for Claude Code tasks. XML-like tags are acce
 
 For Claude Code implementation tasks, specify ownership and remind the task not to overwrite unrelated edits.
 
+## Compatible Host Fallback Notes
+
+Use these notes for hosts without a first-class adapter in this skill:
+
+```text
+# Task
+
+<one concrete delegated task>
+
+# Context
+
+<target, user request, relevant files or artifacts, assumptions>
+
+# Agent Mode
+
+Use <explorer|worker|default>.
+
+# Requirements
+
+- <requirement>
+- <requirement>
+
+# Constraints
+
+- <read-only, ownership, safety, language, or scope constraints>
+
+# Acceptance Criteria
+
+- <how the host agent should know it is done>
+
+# Output
+
+Return <specific final format>.
+```
+
+If the host has no native dispatch tool, show this prompt and say:
+
+```text
+This host did not expose an automatic delegation tool. Use the prepared prompt above with your agent/task workflow.
+```
+
 ## Confirmation Copy
 
 Use native host choices when available. For normal-risk tasks, make "Send" the default choice; for safety-gated tasks, require explicit send confirmation and do not default to sending.

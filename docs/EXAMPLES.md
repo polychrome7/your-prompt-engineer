@@ -1,6 +1,6 @@
 # Examples
 
-These examples show the intended behavior of Your Prompt Engineer. The exact wording may vary by host, but the shape should stay consistent: target check, agent routing, prepared prompt, confirmation, and safety handling.
+These examples show the intended behavior of Your Prompt Engineer. The exact wording may vary by host, but the shape should stay consistent: target check, agent routing, prepared prompt, confirmation, and safety handling. Automatic dispatch depends on whether the current host exposes a native delegation tool.
 
 ## 1. Vague Request -> Scout Prompt
 

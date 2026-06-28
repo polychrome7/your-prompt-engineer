@@ -1,13 +1,15 @@
 ---
 name: your-prompt-engineer
-description: Transform rough natural-language requests into clear, executable prompts for agent delegation, then dispatch them through Codex or Claude Code tools after confirmation unless direct sending is requested. Use when the user explicitly invokes $your-prompt-engineer, or naturally asks to write, improve, review, translate, structure, or prepare a prompt for an agent/task/subagent/Claude Code/Codex worker; says "帮我写个 prompt", "整理成 agent prompt", "优化这个 prompt 再发给 agent", "write a prompt for an agent", "turn this into an agent prompt", or "agent に投げるプロンプトを書いて". If the user only asks to run/delegate/inspect/fix with an agent but does not mention prompt preparation, do not trigger implicitly. If the prompt target says project/current project and the workspace is empty or projectless, ask for the project path before preparing or dispatching.
+description: Transform rough natural-language requests into clear, executable prompts for agent delegation, then dispatch them through Codex, Claude Code, or compatible host tools when available after confirmation unless direct sending is requested. Use when the user explicitly invokes $your-prompt-engineer, or naturally asks to write, improve, review, translate, structure, or prepare a prompt for an agent/task/subagent/worker; says "帮我写个 prompt", "整理成 agent prompt", "优化这个 prompt 再发给 agent", "write a prompt for an agent", "turn this into an agent prompt", or "agent に投げるプロンプトを書いて". If the user only asks to run/delegate/inspect/fix with an agent but does not mention prompt preparation, do not trigger implicitly. If the prompt target says project/current project and the workspace is empty or projectless, ask for the project path before preparing or dispatching.
 ---
 
 # Your Prompt Engineer
 
 ## Overview
 
-Turn a user's rough request into a precise delegation prompt, select the right agent mode, show the prepared prompt to the user, and dispatch it after confirmation.
+Turn a user's rough request into a precise delegation prompt, select the right agent mode, show the prepared prompt to the user, and dispatch it after confirmation when the current host exposes a delegation mechanism.
+
+Codex and Claude Code are first-class targets. Other compatible agent hosts should use the same prompt preparation, target validation, confirmation, and safety-gate behavior, then dispatch through native host tools when available. If no dispatch tool is available, provide the prepared prompt and clear handoff instructions instead of claiming the task was sent.
 
 Support Chinese, English, and Japanese in user-facing communication. Choose the prompt language that best fits execution: usually English for technical/code tasks, and the project or audience language for writing, localization, or domain-specific work. Replies intended for the user's customer should follow the project language; when unclear, follow the user's current language.
 
@@ -72,7 +74,7 @@ Before writing the final prompt, extract:
 - Acceptance: how the agent can know it is done.
 - Risk: production, account, money, privacy, security, compliance, or large-scope impact.
 - Language: user language, project language, customer language, and best execution language.
-- Host: Codex, Claude Code, or unavailable/unknown.
+- Host: Codex, Claude Code, compatible agent host, or unavailable/unknown.
 - Agent type: explorer, worker, default, or multiple independent agents.
 
 If a field is missing but safely inferable, add it as an explicit assumption in the prompt. If the goal or target is missing and not inferable, ask one concise follow-up question.
@@ -145,6 +147,17 @@ When Claude Code exposes a Task/subagent mechanism, use it after confirmation:
 - Use implementation tasks for clear execution work.
 - Include file/module ownership for code-editing tasks.
 - Ask the task to report changed files, verification, and unresolved risks.
+
+### Compatible Agent Hosts
+
+For other agent hosts, inspect the available tools and host conventions before dispatching:
+
+- If a native agent/task/subagent/worker delegation tool is exposed, use it after confirmation.
+- If the host supports interactive choices, use the same Send / Modify / Stop confirmation flow.
+- If the host supports skill files but not automatic dispatch, present the prepared prompt and explain how to hand it off manually.
+- If the host has a known prompt style, adapt formatting while preserving task, context, requirements, constraints, acceptance criteria, and output sections.
+
+Do not claim first-class support for a host unless its delegation behavior is documented in this skill or verified in the current environment.
 
 If the host does not expose an automatic dispatch tool, present the prepared prompt and state that this environment cannot auto-dispatch from the skill.
 
@@ -261,4 +274,4 @@ If the user asks for changes, revise the prompt and show it again. If the user s
 
 ## Reference
 
-Read `references/prompt-templates.md` when preparing scout, worker, default, multi-agent, Codex-specific, or Claude Code-specific prompts.
+Read `references/prompt-templates.md` when preparing scout, worker, default, multi-agent, Codex-specific, Claude Code-specific, or compatible-host fallback prompts.
