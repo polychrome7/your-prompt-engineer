@@ -1,8 +1,41 @@
 # Your Prompt Engineer
 
-Your Prompt Engineer turns rough requests into dispatch-ready prompts for Codex and Claude Code agents.
+Turn rough asks into agent-ready work.
+
+Your Prompt Engineer is a prompt handoff layer for Codex and Claude Code agents. It turns rough requests into dispatch-ready prompts with target checks, agent routing, confirmation, and safety gates.
 
 It is for people who think in natural language first, then want a safer, clearer handoff to an explorer, worker, or task agent.
+
+## Before / After
+
+Before:
+
+```text
+Check this project for optimization opportunities.
+```
+
+After:
+
+```text
+# Task
+
+Inspect the current project and identify practical optimization opportunities. Do not modify files.
+
+# Work Mode
+
+This is a read-only scouting task. Identify concrete opportunities and prioritize them by impact and confidence.
+
+# Output
+
+Return:
+- A concise summary of the project type and main technologies.
+- The highest-value optimization opportunities.
+- Affected files or areas for each opportunity.
+- Estimated effort, risks, and suggested next steps.
+- A recommended worker prompt for the top improvements.
+```
+
+The point is not just "write a prompt." The point is a repeatable handoff: clear target, right agent mode, safe constraints, expected output, and confirmation before dispatch.
 
 ## What It Does
 
@@ -14,6 +47,28 @@ It is for people who think in natural language first, then want a safer, clearer
 - Supports direct-send mode when explicitly requested.
 - Adds safety gates for production, billing, secrets, external APIs, sensitive data, and broad changes.
 - Supports Chinese, English, and Japanese user-facing flows.
+
+## Use Cases
+
+- Turn vague feature ideas into implementation-ready worker tasks.
+- Ask an explorer to inspect a codebase safely before any edits.
+- Convert bug reports into structured investigation or repair prompts.
+- Prepare Claude Code task prompts from rough notes.
+- Split independent work into multiple agent tasks with non-overlapping ownership.
+- Add confirmation and safety gates before dispatching risky agent work.
+
+## Why Not Just Ask the Model?
+
+You can ask a model to write prompts. This skill is for repeatable delegation behavior.
+
+It adds a consistent process around prompt handoff:
+
+- target validation before writing a prompt
+- scout-first routing for vague tasks
+- explorer/worker/default agent selection
+- host-specific Codex and Claude Code prompt patterns
+- confirmation before dispatch
+- safety gates for risky work
 
 ## Recommended Invocation
 
@@ -125,6 +180,24 @@ Which project should the agent inspect? Please provide a project path, repositor
 - Automatic dispatch depends on the host exposing tools such as Codex multi-agent tools or Claude Code task/subagent tools.
 - Natural-language implicit triggering is host-dependent. Explicit `$your-prompt-engineer` invocation is the reliable path.
 - If no dispatch tool is available, the skill should output the prepared prompt and explain that automatic dispatch is unavailable in the current host.
+
+## Roadmap
+
+- Add more host adapter guidance.
+- Expand Claude Code task prompt examples.
+- Add compact and verbose confirmation modes.
+- Collect community prompt recipes for common workflows.
+- Add more forward-test examples for empty workspace, scout-first, worker, and safety-gated scenarios.
+
+## Contributing
+
+Good contribution areas:
+
+- `good first issue`: small copy, examples, docs, or test prompt improvements
+- `host-adapter`: support or document another agent host
+- `prompt-template`: improve prompt templates for a repeatable workflow
+
+Please keep the skill itself concise. Put detailed examples and host-specific notes in `references/` when they would make `SKILL.md` too large.
 
 ## Repository Layout
 
