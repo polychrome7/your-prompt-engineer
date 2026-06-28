@@ -1,0 +1,315 @@
+# Prompt Templates
+
+Use these templates as starting points. Keep the final prompt specific to the user's actual request and current host.
+
+## Prompt Preparation Checklist
+
+Before drafting, fill these fields mentally or in the prompt when useful:
+
+- Goal:
+- Target:
+- Output:
+- Constraints:
+- Acceptance:
+- Risk level:
+- Language:
+- Host adapter:
+- Agent type:
+- Assumptions:
+
+Include assumptions only when they help the delegated agent avoid ambiguity.
+
+## Scout / Explorer Prompt
+
+```text
+# Task
+
+Investigate the user's rough request and the current context. Do not modify files.
+
+# User Request
+
+<quote or summarize the user's original request>
+
+# Context To Inspect
+
+<workspace, files, repo, product, text, issue, or other relevant objects>
+
+# Work Mode
+
+This is a scouting task. Identify the concrete task, relevant files or artifacts, missing information, risks, and the best next action.
+
+# Output
+
+Return:
+- A concise interpretation of what the user likely wants.
+- Relevant files, modules, systems, or artifacts.
+- Missing information that blocks execution, if any.
+- Risks or constraints.
+- A recommended executable prompt for a worker/default agent.
+
+# Constraints
+
+Do not make code or file changes. Do not invent requirements that are not supported by the context; label assumptions clearly.
+```
+
+## Worker Prompt
+
+```text
+# Task
+
+<clear implementation or file-change task>
+
+# User Request
+
+<quote or summarize the user's original request>
+
+# Context
+
+<repo/workspace details, relevant files, prior findings, constraints, target behavior>
+
+# Work Mode
+
+This is an execution task. Edit files directly within the assigned scope.
+
+You are not alone in the codebase; do not revert edits made by others, and adapt to nearby changes.
+
+# Ownership
+
+You are responsible for:
+- <files, directories, modules, or behavior area>
+
+Avoid changing:
+- <unrelated files, generated files, live config, or sensitive areas>
+
+# Requirements
+
+- <requirement 1>
+- <requirement 2>
+- <requirement 3>
+
+# Acceptance Criteria
+
+- <how to know the task is done>
+- <tests or checks expected>
+
+# Output
+
+In your final response, include:
+- Files changed.
+- What changed.
+- Verification performed and results.
+- Any remaining risks or follow-up needed.
+```
+
+## Default / Analysis Prompt
+
+```text
+# Task
+
+<clear non-editing, writing, planning, analysis, or prompt-generation task>
+
+# User Request
+
+<quote or summarize the user's original request>
+
+# Context
+
+<relevant background, examples, files, project language, audience>
+
+# Requirements
+
+- <requirement 1>
+- <requirement 2>
+- <requirement 3>
+
+# Output
+
+Return <specific format>. Keep assumptions explicit and separate from facts.
+```
+
+## Multi-Agent Split Prompt
+
+Use only when tasks are independent.
+
+```text
+Split this request into independent agent tasks. For each task, provide:
+- Agent type: explorer, worker, or default.
+- Responsibility and write scope, if any.
+- Prompt.
+- Expected output.
+- Dependencies, if any.
+
+Avoid overlapping file ownership between worker agents.
+```
+
+## Codex Dispatch Notes
+
+Prefer Markdown task blocks for Codex agents:
+
+```text
+# Task
+
+<one concrete task>
+
+# Context
+
+<current workspace, relevant files, original request, known constraints>
+
+# Agent Role
+
+Use <explorer|worker|default>.
+
+# Instructions
+
+<host-specific execution instructions>
+
+# Output
+
+<exact final response requirements>
+```
+
+For Codex workers, include file ownership and the instruction not to revert others' edits.
+
+## Claude Code Dispatch Notes
+
+Prefer compact, structured prompts for Claude Code tasks. XML-like tags are acceptable when they improve clarity:
+
+```text
+<task>
+<one concrete task>
+</task>
+
+<context>
+<original request, repo/files, constraints>
+</context>
+
+<mode>
+<scout|implementation|analysis>
+</mode>
+
+<requirements>
+- <requirement>
+- <requirement>
+</requirements>
+
+<output>
+- Changed files, if any
+- Verification performed
+- Risks or blockers
+</output>
+```
+
+For Claude Code implementation tasks, specify ownership and remind the task not to overwrite unrelated edits.
+
+## Confirmation Copy
+
+Use native host choices when available. For normal-risk tasks, make "Send" the default choice; for safety-gated tasks, require explicit send confirmation and do not default to sending.
+
+Use short confirmation copy when native choices are unavailable:
+
+````text
+I will send this to `<agent type>` because <reason>.
+
+**Prepared Prompt**
+
+```text
+<prompt>
+```
+
+Send it?
+````
+
+Text fallback options:
+
+```text
+Preparing to dispatch to: <agent type>
+Reason: <brief reason>
+Risk: <low|medium|high and reason>
+Default action: Send
+
+────────────────
+1. Send
+   Send the prepared prompt to <agent type>
+
+2. Modify
+   Tell me what to change; I will revise the prompt and confirm again
+
+3. Stop
+   Do not send; keep the prompt for manual use
+
+Press Enter for default: Send
+You can also reply: 1 / Send
+```
+
+Chinese fallback:
+
+```text
+准备派发给：<agent type>
+派发原因：<brief reason>
+风险等级：<低|中|高 and reason>
+默认操作：发送
+
+────────────────
+1. 发送
+   立即把上面的 prompt 发给 <agent type>
+
+2. 修改
+   说明你想改哪里，我会更新 prompt 后再次确认
+
+3. 停止
+   不发送，保留当前 prompt 供你手动使用
+
+直接回车默认：发送
+也可以回复：1 / 发送 / send / 送信
+```
+
+Japanese fallback:
+
+```text
+送信先：<agent type>
+理由：<brief reason>
+リスク：<low|medium|high and reason>
+デフォルト操作：送信
+
+────────────────
+1. 送信
+   上の prompt を <agent type> に送信する
+
+2. 修正
+   変更したい点を伝える。prompt を修正して再確認する
+
+3. 停止
+   送信せず、prompt を手動利用用に残す
+
+Enter のデフォルト：送信
+次のように返信できます：1 / 送信 / send
+```
+
+Safety-gated fallback:
+
+```text
+This task may involve high-risk actions and requires explicit confirmation.
+
+Preparing to dispatch to: <agent type>
+Reason: <brief reason>
+Risk: High, <safety reason>
+Default action: Stop
+
+────────────────
+1. Send
+   Dispatch only after explicit confirmation
+
+2. Modify
+   Tell me what to change; I will revise the prompt and confirm again
+
+3. Stop
+   Do not send; keep the prompt for manual use
+
+Press Enter for default: Stop
+```
+
+For direct-send mode, report after dispatch instead:
+
+```text
+Sent to `<agent type>` using <host adapter>. Handle: <id if available>.
+```

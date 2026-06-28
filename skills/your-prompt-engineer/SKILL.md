@@ -1,0 +1,264 @@
+---
+name: your-prompt-engineer
+description: Transform rough natural-language requests into clear, executable prompts for agent delegation, then dispatch them through Codex or Claude Code tools after confirmation unless direct sending is requested. Use when the user explicitly invokes $your-prompt-engineer, or naturally asks to write, improve, review, translate, structure, or prepare a prompt for an agent/task/subagent/Claude Code/Codex worker; says "帮我写个 prompt", "整理成 agent prompt", "优化这个 prompt 再发给 agent", "write a prompt for an agent", "turn this into an agent prompt", or "agent に投げるプロンプトを書いて". If the user only asks to run/delegate/inspect/fix with an agent but does not mention prompt preparation, do not trigger implicitly. If the prompt target says project/current project and the workspace is empty or projectless, ask for the project path before preparing or dispatching.
+---
+
+# Your Prompt Engineer
+
+## Overview
+
+Turn a user's rough request into a precise delegation prompt, select the right agent mode, show the prepared prompt to the user, and dispatch it after confirmation.
+
+Support Chinese, English, and Japanese in user-facing communication. Choose the prompt language that best fits execution: usually English for technical/code tasks, and the project or audience language for writing, localization, or domain-specific work. Replies intended for the user's customer should follow the project language; when unclear, follow the user's current language.
+
+## Invocation
+
+Do not require the user to type `$your-prompt-engineer`. Treat explicit skill invocation and natural-language intent as equivalent.
+
+For reliable behavior across hosts, prefer explicit invocation:
+
+```text
+Use $your-prompt-engineer <your rough request>
+```
+
+Natural-language invocation may work when the host supports implicit personal skill discovery, but explicit invocation is recommended for predictable prompt preparation, confirmation, and dispatch behavior.
+
+If the user combines prompt/requirement preparation language with agent delegation language, use this skill before any delegation tool or parallel-agent skill. Do not dispatch agents first and summarize later unless the user explicitly requested direct sending.
+
+Trigger on requests such as:
+
+- "帮我写个 prompt"
+- "帮我写个 prompt，让 agent 去做"
+- "整理成 agent prompt"
+- "优化这个 prompt，然后问我要不要发给 agent"
+- "帮我整理一下需求，让 subagent 先只读检查这个项目"
+- "把这个变成 subagent prompt"
+- "send this prompt to an agent"
+- "turn this into a Claude Code task prompt"
+- "agent に渡すプロンプトを書いて"
+
+Do not trigger implicitly when the user asks to run, spawn, dispatch, delegate, inspect, fix, implement, or check something with an agent/subagent but does not mention prompt writing or prompt preparation. In that case, prefer the host's normal delegation behavior unless the user explicitly invokes `$your-prompt-engineer`.
+
+## Workflow
+
+1. Identify whether the user wants prompt preparation, agent delegation, or both.
+2. Decide whether the request is clear enough to execute or needs scouting.
+3. Extract the task intent, target object, output, constraints, acceptance signal, risk level, language, and best host adapter.
+4. Resolve the task target before writing the prompt.
+5. Choose confirm-first, direct-send, or scout-first mode.
+6. Produce a prepared prompt using `references/prompt-templates.md`.
+7. Show the prompt to the user and ask whether to send it unless direct-send mode applies. Prefer the host's native interactive choice UI when available.
+8. After confirmation or explicit direct-send instruction, dispatch with the best available host adapter.
+9. Report the agent type/tool used and the agent id or task handle when available.
+
+Skip the confirmation step only when the user explicitly says to send directly, auto-dispatch, or not ask for confirmation.
+
+## Dispatch Modes
+
+- Use confirm-first mode by default: prepare the prompt, show it to the user, and ask whether to send.
+- Use direct-send mode only when the user explicitly says "直接发", "不用确认", "自动派发", "send directly", "no confirmation", or equivalent Japanese phrasing.
+- Use scout-first mode when the request is vague but can be investigated from current context. Prepare a scout prompt for an explorer/read-only task before preparing an execution prompt.
+
+Always require confirmation before dispatching if the task may affect production systems, deployments, accounts, billing, credentials, external APIs, sensitive data, legal/compliance content, or broad multi-file changes, even if the user generally prefers automation.
+
+## Intent Extraction
+
+Before writing the final prompt, extract:
+
+- Goal: the concrete outcome.
+- Target: files, repo, product, document, text, page, issue, dataset, or system.
+- Output: implementation, report, plan, document, prompt, test result, or other deliverable.
+- Constraints: user-stated requirements, exclusions, style, platform, tools, time, budget, or scope.
+- Acceptance: how the agent can know it is done.
+- Risk: production, account, money, privacy, security, compliance, or large-scope impact.
+- Language: user language, project language, customer language, and best execution language.
+- Host: Codex, Claude Code, or unavailable/unknown.
+- Agent type: explorer, worker, default, or multiple independent agents.
+
+If a field is missing but safely inferable, add it as an explicit assumption in the prompt. If the goal or target is missing and not inferable, ask one concise follow-up question.
+
+## Target Resolution
+
+Do not treat "project", "this project", "current project", or "项目" as a valid target unless the current workspace appears to contain a real project or the user supplied a path, repository, file, issue, document, or other concrete object.
+
+A workspace is probably a valid project when it contains project indicators such as:
+
+- `.git/`
+- `package.json`, `pnpm-lock.yaml`, `pyproject.toml`, `requirements.txt`, `go.mod`, `Cargo.toml`, `pom.xml`, `build.gradle`, `Gemfile`, `composer.json`
+- application source directories such as `src/`, `app/`, `pages/`, `lib/`, `server/`, or `tests/`
+- clear product/document assets named by the user
+
+A workspace is not enough by itself when it is a generated, empty, or projectless directory, especially when it only contains folders such as `work/`, `outputs/`, scratch files, or no recognizable project indicators.
+
+When the target is missing, ask one concise question before producing a prompt:
+
+```text
+你想让 agent 检查哪个项目？请提供项目路径、仓库、文件夹，或在目标项目 workspace 里重新打开会话。
+```
+
+In English or Japanese contexts, ask the same question in the user's language. Do not produce a scout or worker prompt until the target is resolved.
+
+## Information Sufficiency
+
+A request is ready for an execution agent when it has:
+
+- A clear goal: what should be done.
+- A task object: the codebase, files, text, product, page, dataset, issue, or problem to work on.
+- An expected output: code changes, analysis, prompt, plan, document, test result, list, or other deliverable.
+- Constraints or preferences that the user stated.
+- An acceptance signal: enough detail to judge whether the task is complete. If absent, define a short acceptance standard in the prompt.
+
+Ask a concise follow-up only when the goal or task object is missing and cannot be inferred from the current context.
+
+If the request is vague but has enough context to investigate, prepare a scout prompt for an explorer/research agent instead of asking many questions. The scout should inspect context, identify the concrete task, list missing information and risks, and recommend an executable worker prompt.
+
+## Agent Selection
+
+- Use `explorer` or a read-only task when the request is vague, needs repository/context discovery, or should not modify files yet.
+- Use `worker` when the request is clear and requires code edits, file changes, implementation, or repair.
+- Use `default` when the task is clear but mostly analytical, editorial, planning-oriented, or outside code ownership.
+- Split into multiple agents only when tasks are independent and have distinct responsibilities.
+- Do not delegate tiny tasks that the current agent can complete more directly unless the user explicitly wants delegation.
+
+For worker prompts, always include ownership/scope and this instruction: "You are not alone in the codebase; do not revert edits made by others, and adapt to nearby changes."
+
+## Dispatch Adapters
+
+Use the current host's native delegation mechanism. Do not claim a dispatch happened unless a tool call or host action actually succeeded.
+
+### Codex
+
+When Codex exposes multi-agent tools, use them after confirmation:
+
+- `multi_agent_v1.spawn_agent` for new explorer, worker, or default agents.
+- `multi_agent_v1.send_input` for continuing a relevant existing agent.
+- `multi_agent_v1.wait_agent` only when the next step is blocked on the result.
+- `multi_agent_v1.close_agent` when an agent is no longer needed.
+
+Do not override model, reasoning effort, or service tier unless the user asks or the task clearly requires it.
+
+### Claude Code
+
+When Claude Code exposes a Task/subagent mechanism, use it after confirmation:
+
+- Use read-only/scout tasks for ambiguous requests.
+- Use implementation tasks for clear execution work.
+- Include file/module ownership for code-editing tasks.
+- Ask the task to report changed files, verification, and unresolved risks.
+
+If the host does not expose an automatic dispatch tool, present the prepared prompt and state that this environment cannot auto-dispatch from the skill.
+
+## Interactive Confirmation
+
+When the current host supports native interactive choices, use them instead of plain text confirmation.
+
+Offer exactly these choices for normal-risk tasks:
+
+- Send (default): dispatch the prepared prompt.
+- Modify: ask what to change, revise the prompt, then show confirmation again.
+- Do not send: stop after providing the prompt.
+
+For safety-gated tasks, do not make "Send" the default. Require an explicit send choice after explaining the safety reason.
+
+When native interactive choices are unavailable, use text fallback:
+
+```text
+准备派发给：<agent type>
+派发原因：<brief reason>
+风险等级：<low|medium|high and reason>
+默认操作：发送
+
+────────────────
+1. 发送
+   立即把上面的 prompt 发给 <agent type>
+
+2. 修改
+   说明你想改哪里，我会更新 prompt 后再次确认
+
+3. 停止
+   不发送，保留当前 prompt 供你手动使用
+
+直接回车默认：发送
+也可以回复：1 / 发送 / send / 送信
+```
+
+Use the same language as the user for the confirmation choices.
+
+Accept numeric and text replies:
+
+- `1`, `发送`, `send`, `送信`: dispatch the prepared prompt.
+- `2`, `修改`, `modify`, `修正`: ask what to change, revise the prompt, then show the confirmation choices again.
+- `3`, `停止`, `不发送`, `stop`, `do not send`, `送信しない`: stop after providing the prompt.
+
+For safety-gated tasks, use this fallback instead:
+
+```text
+此任务涉及高风险操作，需要明确确认。
+
+准备派发给：<agent type>
+派发原因：<brief reason>
+风险等级：高，<safety reason>
+默认操作：停止
+
+────────────────
+1. 发送
+   明确确认后才会派发
+
+2. 修改
+   说明你想改哪里，我会更新 prompt 后再次确认
+
+3. 停止
+   不发送，保留当前 prompt 供你手动使用
+
+直接回车默认：停止
+```
+
+Do not treat empty input as Send when a safety gate applies.
+
+## Safety Gates
+
+Always pause for explicit confirmation before dispatch when the prepared task may:
+
+- Modify production, deployment, CI/CD, infrastructure, billing, accounts, secrets, or access control.
+- Call external APIs, send messages, publish content, or trigger irreversible actions.
+- Process sensitive personal, financial, legal, medical, customer, or credential data.
+- Make broad or ambiguous changes across many files.
+- Require assumptions that could materially change the outcome.
+
+When a safety gate applies, state the reason briefly and ask for confirmation after showing the prompt.
+
+## User-Facing Format
+
+For a clear execution task:
+
+````markdown
+I will send this to `worker` because the request is clear and requires implementation.
+
+**Prepared Prompt**
+
+```text
+...
+```
+
+Send it?
+````
+
+For a vague task:
+
+````markdown
+I will first send this to `explorer` because the request needs context scouting.
+
+**Scout Prompt**
+
+```text
+...
+```
+
+Send it?
+````
+
+If the user asks for changes, revise the prompt and show it again. If the user says not to send, stop after providing the prepared prompt.
+
+## Reference
+
+Read `references/prompt-templates.md` when preparing scout, worker, default, multi-agent, Codex-specific, or Claude Code-specific prompts.
