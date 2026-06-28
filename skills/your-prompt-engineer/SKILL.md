@@ -1,6 +1,6 @@
 ---
 name: your-prompt-engineer
-description: Transform rough natural-language requests into clear, executable prompts for agent delegation, then dispatch them through Codex, Claude Code, or compatible host tools when available after confirmation unless direct sending is requested. Use when the user explicitly invokes $your-prompt-engineer, or naturally asks to write, improve, review, translate, structure, or prepare a prompt for an agent/task/subagent/worker; says "帮我写个 prompt", "整理成 agent prompt", "优化这个 prompt 再发给 agent", "write a prompt for an agent", "turn this into an agent prompt", or "agent に投げるプロンプトを書いて". If the user only asks to run/delegate/inspect/fix with an agent but does not mention prompt preparation, do not trigger implicitly. If the prompt target says project/current project and the workspace is empty or projectless, ask for the project path before preparing or dispatching.
+description: Use when the user invokes $your-prompt-engineer or asks to prepare, refine, structure, or send an agent prompt/task prompt for Codex, Claude Code, or another compatible agent host. Use for prompt handoff workflows before delegating to explorers, workers, tasks, or subagents. Do not trigger implicitly when the user asks only to run/delegate/inspect/fix with an agent and does not mention prompt preparation.
 ---
 
 # Your Prompt Engineer
@@ -11,7 +11,7 @@ Turn a user's rough request into a precise delegation prompt, select the right a
 
 Codex and Claude Code are first-class targets. Other compatible agent hosts should use the same prompt preparation, target validation, confirmation, and safety-gate behavior, then dispatch through native host tools when available. If no dispatch tool is available, provide the prepared prompt and clear handoff instructions instead of claiming the task was sent.
 
-Support Chinese, English, and Japanese in user-facing communication. Choose the prompt language that best fits execution: usually English for technical/code tasks, and the project or audience language for writing, localization, or domain-specific work. Replies intended for the user's customer should follow the project language; when unclear, follow the user's current language.
+Support Chinese, English, and Japanese in user-facing communication. Choose the prompt language that best fits execution: usually English for technical/code tasks, and the project or audience language for content, localization, or domain-specific work. Replies intended for the user's customer should follow the project language; when unclear, follow the user's current language.
 
 ## Invocation
 
@@ -29,15 +29,14 @@ If the user combines prompt/requirement preparation language with agent delegati
 
 Trigger on requests such as:
 
-- "帮我写个 prompt"
-- "帮我写个 prompt，让 agent 去做"
-- "整理成 agent prompt"
-- "优化这个 prompt，然后问我要不要发给 agent"
-- "帮我整理一下需求，让 subagent 先只读检查这个项目"
-- "把这个变成 subagent prompt"
-- "send this prompt to an agent"
-- "turn this into a Claude Code task prompt"
-- "agent に渡すプロンプトを書いて"
+- "Write an agent prompt for this request."
+- "Turn this rough request into a worker task prompt."
+- "Prepare a Claude Code task prompt for this bug report."
+- "Refine this prompt and ask before sending it to an agent."
+- "Create a read-only scout prompt for a subagent to inspect this project."
+- "Send this prepared prompt to an explorer after confirmation."
+
+Equivalent Chinese or Japanese requests should also trigger this skill when they clearly ask for prompt preparation or agent handoff. Keep public examples English-first; localize user-facing replies at runtime.
 
 Do not trigger implicitly when the user asks to run, spawn, dispatch, delegate, inspect, fix, implement, or check something with an agent/subagent but does not mention prompt writing or prompt preparation. In that case, prefer the host's normal delegation behavior unless the user explicitly invokes `$your-prompt-engineer`.
 
@@ -58,7 +57,7 @@ Skip the confirmation step only when the user explicitly says to send directly, 
 ## Dispatch Modes
 
 - Use confirm-first mode by default: prepare the prompt, show it to the user, and ask whether to send.
-- Use direct-send mode only when the user explicitly says "直接发", "不用确认", "自动派发", "send directly", "no confirmation", or equivalent Japanese phrasing.
+- Use direct-send mode only when the user explicitly says "send directly", "no confirmation", "auto-dispatch", or equivalent localized phrasing.
 - Use scout-first mode when the request is vague but can be investigated from current context. Prepare a scout prompt for an explorer/read-only task before preparing an execution prompt.
 
 Always require confirmation before dispatching if the task may affect production systems, deployments, accounts, billing, credentials, external APIs, sensitive data, legal/compliance content, or broad multi-file changes, even if the user generally prefers automation.
@@ -81,7 +80,7 @@ If a field is missing but safely inferable, add it as an explicit assumption in 
 
 ## Target Resolution
 
-Do not treat "project", "this project", "current project", or "项目" as a valid target unless the current workspace appears to contain a real project or the user supplied a path, repository, file, issue, document, or other concrete object.
+Do not treat "project", "this project", "current project", or equivalent localized phrases as a valid target unless the current workspace appears to contain a real project or the user supplied a path, repository, file, issue, document, or other concrete object.
 
 A workspace is probably a valid project when it contains project indicators such as:
 
@@ -95,10 +94,10 @@ A workspace is not enough by itself when it is a generated, empty, or projectles
 When the target is missing, ask one concise question before producing a prompt:
 
 ```text
-你想让 agent 检查哪个项目？请提供项目路径、仓库、文件夹，或在目标项目 workspace 里重新打开会话。
+Which project should the agent inspect? Please provide a project path, repository, folder, or reopen the session in the target project workspace.
 ```
 
-In English or Japanese contexts, ask the same question in the user's language. Do not produce a scout or worker prompt until the target is resolved.
+Ask the same question in the user's language. Do not produce a scout or worker prompt until the target is resolved.
 
 ## Information Sufficiency
 
@@ -176,54 +175,54 @@ For safety-gated tasks, do not make "Send" the default. Require an explicit send
 When native interactive choices are unavailable, use text fallback:
 
 ```text
-准备派发给：<agent type>
-派发原因：<brief reason>
-风险等级：<low|medium|high and reason>
-默认操作：发送
+Preparing to dispatch to: <agent type>
+Reason: <brief reason>
+Risk: <low|medium|high and reason>
+Default action: Send
 
-────────────────
-1. 发送
-   立即把上面的 prompt 发给 <agent type>
+----------------
+1. Send
+   Send the prepared prompt to <agent type>
 
-2. 修改
-   说明你想改哪里，我会更新 prompt 后再次确认
+2. Modify
+   Tell me what to change; I will revise the prompt and confirm again
 
-3. 停止
-   不发送，保留当前 prompt 供你手动使用
+3. Stop
+   Do not send; keep the prompt for manual use
 
-直接回车默认：发送
-也可以回复：1 / 发送 / send / 送信
+Press Enter for default: Send
+You can also reply: 1 / Send
 ```
 
-Use the same language as the user for the confirmation choices.
+Use the same language as the user for the confirmation choices at runtime while preserving the three actions: Send, Modify, and Stop.
 
 Accept numeric and text replies:
 
-- `1`, `发送`, `send`, `送信`: dispatch the prepared prompt.
-- `2`, `修改`, `modify`, `修正`: ask what to change, revise the prompt, then show the confirmation choices again.
-- `3`, `停止`, `不发送`, `stop`, `do not send`, `送信しない`: stop after providing the prompt.
+- `1`, `send`, or localized equivalents: dispatch the prepared prompt.
+- `2`, `modify`, or localized equivalents: ask what to change, revise the prompt, then show the confirmation choices again.
+- `3`, `stop`, `do not send`, or localized equivalents: stop after providing the prompt.
 
 For safety-gated tasks, use this fallback instead:
 
 ```text
-此任务涉及高风险操作，需要明确确认。
+This task may involve high-risk actions and requires explicit confirmation.
 
-准备派发给：<agent type>
-派发原因：<brief reason>
-风险等级：高，<safety reason>
-默认操作：停止
+Preparing to dispatch to: <agent type>
+Reason: <brief reason>
+Risk: High, <safety reason>
+Default action: Stop
 
-────────────────
-1. 发送
-   明确确认后才会派发
+----------------
+1. Send
+   Dispatch only after explicit confirmation
 
-2. 修改
-   说明你想改哪里，我会更新 prompt 后再次确认
+2. Modify
+   Tell me what to change; I will revise the prompt and confirm again
 
-3. 停止
-   不发送，保留当前 prompt 供你手动使用
+3. Stop
+   Do not send; keep the prompt for manual use
 
-直接回车默认：停止
+Press Enter for default: Stop
 ```
 
 Do not treat empty input as Send when a safety gate applies.

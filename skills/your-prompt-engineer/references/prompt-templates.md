@@ -268,7 +268,7 @@ Reason: <brief reason>
 Risk: <low|medium|high and reason>
 Default action: Send
 
-────────────────
+----------------
 1. Send
    Send the prepared prompt to <agent type>
 
@@ -282,49 +282,7 @@ Press Enter for default: Send
 You can also reply: 1 / Send
 ```
 
-Chinese fallback:
-
-```text
-准备派发给：<agent type>
-派发原因：<brief reason>
-风险等级：<低|中|高 and reason>
-默认操作：发送
-
-────────────────
-1. 发送
-   立即把上面的 prompt 发给 <agent type>
-
-2. 修改
-   说明你想改哪里，我会更新 prompt 后再次确认
-
-3. 停止
-   不发送，保留当前 prompt 供你手动使用
-
-直接回车默认：发送
-也可以回复：1 / 发送 / send / 送信
-```
-
-Japanese fallback:
-
-```text
-送信先：<agent type>
-理由：<brief reason>
-リスク：<low|medium|high and reason>
-デフォルト操作：送信
-
-────────────────
-1. 送信
-   上の prompt を <agent type> に送信する
-
-2. 修正
-   変更したい点を伝える。prompt を修正して再確認する
-
-3. 停止
-   送信せず、prompt を手動利用用に残す
-
-Enter のデフォルト：送信
-次のように返信できます：1 / 送信 / send
-```
+Localize these labels to the user's language when useful, but preserve the same three actions and defaults: Send, Modify, Stop.
 
 Safety-gated fallback:
 
@@ -336,7 +294,7 @@ Reason: <brief reason>
 Risk: High, <safety reason>
 Default action: Stop
 
-────────────────
+----------------
 1. Send
    Dispatch only after explicit confirmation
 
