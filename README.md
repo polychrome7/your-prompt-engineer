@@ -45,6 +45,7 @@ The point is not just "write a prompt." The point is a repeatable handoff: clear
 - Uses scout-first behavior for vague tasks.
 - Shows the prepared prompt before dispatch by default.
 - Supports direct-send mode when explicitly requested.
+- Treats text after explicit invocation as the raw request, even when it is fragmentary.
 - Adds safety gates for production, billing, secrets, external APIs, sensitive data, and broad changes.
 - Supports Chinese, English, and Japanese user-facing flows.
 
@@ -79,6 +80,18 @@ Explicit invocation is recommended for reliable behavior:
 Use $your-prompt-engineer Write a prompt for an agent to inspect this project for optimization opportunities.
 ```
 
+You can also put the raw request directly after the skill name. It does not need to be organized or phrased as "write a prompt":
+
+```text
+$your-prompt-engineer make this image softer
+```
+
+If the host maps slash commands to skills, this style may also work:
+
+```text
+/your-prompt-engineer make the current image feel softer
+```
+
 Natural-language invocation may work in hosts that support implicit personal skill discovery, but it is not guaranteed. If the host does not load the skill implicitly, it may simply answer as a normal agent.
 
 Codex and Claude Code are first-class targets. Other compatible hosts can still use the prepared prompt and confirmation workflow; automatic dispatch depends on whether the host exposes a native delegation tool.
@@ -107,6 +120,12 @@ Prepare a prompt and confirm before sending:
 
 ```text
 Use $your-prompt-engineer Write a prompt for an agent to inspect this project for optimization opportunities.
+```
+
+Prepare a prompt from a fragmentary request:
+
+```text
+$your-prompt-engineer make this image softer
 ```
 
 Prepare a worker task:
@@ -153,7 +172,7 @@ Reason: the request needs a read-only context scout before implementation
 Risk: low
 Default action: Send
 
-────────────────
+----------------
 1. Send
    Send the prepared prompt to explorer
 
@@ -184,6 +203,8 @@ Which project should the agent inspect? Please provide a project path, repositor
 - The skill cannot create UI controls by itself. It can only ask the host to use native choices when the host supports them.
 - Automatic dispatch depends on the host exposing tools such as Codex multi-agent tools, Claude Code task/subagent tools, or another native delegation mechanism.
 - Natural-language implicit triggering is host-dependent. Explicit `$your-prompt-engineer` invocation is the reliable path.
+- Slash-command invocation such as `/your-prompt-engineer` only works when the host maps slash commands to skills.
+- Explicit invocation with no payload starts no guaranteed persistent mode. The skill should ask for the raw request or object to transform.
 - If no dispatch tool is available, the skill should output the prepared prompt and explain that automatic dispatch is unavailable in the current host.
 
 ## Roadmap

@@ -56,7 +56,7 @@ Reason: the request needs a read-only context scout before implementation
 Risk: low
 Default action: Send
 
-────────────────
+----------------
 1. Send
    Send the prepared prompt to explorer
 
@@ -144,7 +144,7 @@ Reason: the request is clear and requires README edits
 Risk: low
 Default action: Send
 
-────────────────
+----------------
 1. Send
 2. Modify
 3. Stop
@@ -195,7 +195,7 @@ Reason: the request touches production deployment and credentials
 Risk: High, production workflow and API key handling
 Default action: Stop
 
-────────────────
+----------------
 1. Send
    Dispatch only after explicit confirmation
 
@@ -228,3 +228,63 @@ Example post-dispatch response:
 ```text
 Sent to `explorer` using Codex multi-agent tools. Handle: <agent id>
 ```
+
+## 6. Fragmentary Invocation Payload -> Structured Prompt
+
+User:
+
+```text
+$your-prompt-engineer make this image softer
+```
+
+Expected behavior:
+
+- Treat the text after `$your-prompt-engineer` as the raw request.
+- Do not require the user to say "write a prompt."
+- Use the visible or attached image as the target when available.
+- Ask one concise question if the image or target is not available.
+- Prepare a prompt that turns the fragmentary request into concrete visual direction.
+
+Example response:
+
+````text
+I will prepare this for `default` because the request is a visual refinement task.
+
+**Prepared Prompt**
+
+```text
+# Task
+
+Refine the provided image so it feels softer.
+
+# User Request
+
+"make this image softer"
+
+# Context
+
+Use the currently attached or visible image as the target. Interpret "softer" as a calmer, gentler visual direction unless the user provided more specific brand or style constraints.
+
+# Requirements
+
+- Reduce harsh contrast and overly sharp visual edges where appropriate.
+- Prefer warmer or more balanced tones if the current image feels cold or severe.
+- Preserve the main subject, layout, and intent of the image.
+- Avoid making the result blurry, washed out, or less legible.
+- If editing is not available in this host, return concrete edit instructions instead.
+
+# Output
+
+Return the edited image if the host supports image editing. Otherwise, return a concise set of image-editing instructions that can be used in the available image tool.
+```
+
+Preparing to dispatch to: default
+Reason: the task is clear but depends on the attached or visible image context
+Risk: low
+Default action: Send
+
+----------------
+1. Send
+2. Modify
+3. Stop
+````
