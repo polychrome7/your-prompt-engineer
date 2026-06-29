@@ -1,6 +1,6 @@
 ---
 name: your-prompt-engineer
-description: Use when the user invokes $your-prompt-engineer or asks to prepare, refine, structure, or send an agent prompt/task prompt for Codex, Claude Code, or another compatible agent host. Use for prompt handoff workflows before delegating to explorers, workers, tasks, or subagents. Do not trigger implicitly when the user asks only to run/delegate/inspect/fix with an agent and does not mention prompt preparation.
+description: Use when the user invokes $your-prompt-engineer, uses a host command alias for this skill, or asks to prepare, refine, structure, or send an agent prompt/task prompt for Codex, Claude Code, or another compatible agent host. Treat text after explicit invocation as the raw request even when it is fragmentary. Do not trigger implicitly when the user asks only to run/delegate/inspect/fix with an agent and does not mention prompt preparation.
 ---
 
 # Your Prompt Engineer
@@ -23,10 +23,28 @@ Use this skill when the user explicitly invokes `$your-prompt-engineer` or asks 
 - "Refine this prompt and ask before sending it to an agent."
 - "Create a read-only scout prompt for a subagent to inspect this project."
 - "Send this prepared prompt to an explorer after confirmation."
+- "$your-prompt-engineer make this image softer."
+- "/your-prompt-engineer make the current image feel softer." if the host maps slash commands to skills.
 
 Equivalent Chinese or Japanese requests should also trigger this skill when they clearly ask for prompt preparation or agent handoff.
 
 Do not trigger implicitly when the user asks only to run, spawn, delegate, inspect, fix, implement, or check something with an agent/subagent and does not mention prompt writing or prompt preparation. In that case, use the host's normal delegation behavior unless the user explicitly invokes this skill.
+
+## Explicit Invocation Payload
+
+When the user explicitly invokes this skill, treat any text after the invocation as the raw material to turn into an agent prompt. The text does not need to be organized, complete, or phrased as "please generate a prompt."
+
+Examples of valid raw payloads:
+
+- "make this image softer"
+- "current page feels too cold"
+- "check why this failed"
+- "turn this into something more premium"
+- "same idea, but for Japan SaaS buyers"
+
+If the payload refers to a visible or attached object such as "this image", "current page", "this file", "the selected text", or "this repo", use the available conversation, attachment, workspace, or host context as the target. If the target is not available, ask one concise question for the missing object.
+
+If the user invokes the skill with no payload, ask for the raw request or object to transform. Do not assume a persistent capture mode across future turns unless the user explicitly asks to keep the skill active.
 
 ## Core Workflow
 

@@ -6,6 +6,7 @@ Use these templates as starting points. Keep the final prompt specific to the us
 
 Before drafting, fill these fields mentally or in the prompt when useful:
 
+- Raw payload:
 - Goal:
 - Target:
 - Output:
@@ -18,6 +19,8 @@ Before drafting, fill these fields mentally or in the prompt when useful:
 - Assumptions:
 
 Include assumptions only when they help the delegated agent avoid ambiguity.
+
+When the raw payload is fragmentary, preserve the user's intent and make the missing structure explicit. For example, "make this image softer" can become a prompt that identifies the image target, defines "softer" as visual direction, asks the agent to inspect the available image/context, and requests concrete edits or recommendations.
 
 ## Scout / Explorer Prompt
 
