@@ -177,20 +177,22 @@ Default action: Execute here
 1. Execute here
    Use the prepared prompt in this current conversation
 
-2. Modify
-   Tell me what to change; I will revise the prompt and confirm again
+2. Revise prompt
+   Tell me what to change in the prepared prompt
 
 3. Send to subagent
    Dispatch the prepared prompt to explorer
 
-4. Stop
-   Do not execute or send; keep the prompt for manual use
+4. Keep prompt only
+   Do not execute or send anything
 
 Press Enter for default: Execute here
 You can also reply: 1 / Execute here
 ```
 
-For safety-gated tasks, the default action changes to `Stop`.
+For safety-gated tasks, the default action changes to `Keep prompt only`.
+
+After `1`, the skill should start executing the prepared prompt directly instead of announcing execution mechanics.
 
 ## Target Resolution
 

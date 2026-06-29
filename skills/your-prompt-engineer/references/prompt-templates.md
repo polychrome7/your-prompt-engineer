@@ -247,7 +247,7 @@ This host did not expose an automatic delegation tool. Use the prepared prompt a
 
 ## Confirmation Copy
 
-Use native host choices when available. For normal-risk tasks, make "Execute here" the default choice. Sending to a subagent is a separate action and must not be the default. For safety-gated tasks, require explicit execute/send confirmation and default to Stop.
+Use native host choices when available. For normal-risk tasks, make "Execute here" the default choice. Sending to a subagent is a separate action and must not be the default. For safety-gated tasks, require explicit execute/send confirmation and default to Keep prompt only.
 
 Use short confirmation copy when native choices are unavailable:
 
@@ -275,20 +275,20 @@ Default action: Execute here
 1. Execute here
    Use the prepared prompt in this current conversation
 
-2. Modify
-   Tell me what to change; I will revise the prompt and confirm again
+2. Revise prompt
+   Tell me what to change in the prepared prompt
 
 3. Send to subagent
    Dispatch the prepared prompt to <agent type>
 
-4. Stop
-   Do not execute or send; keep the prompt for manual use
+4. Keep prompt only
+   Do not execute or send anything
 
 Press Enter for default: Execute here
 You can also reply: 1 / Execute here
 ```
 
-Localize these labels to the user's language when useful, but preserve the same four actions and defaults: Execute here, Modify, Send to subagent, Stop.
+Localize these labels to the user's language when useful, but preserve the same four actions and defaults: Execute here, Revise prompt, Send to subagent, Keep prompt only.
 
 Safety-gated fallback:
 
@@ -298,22 +298,22 @@ This task may involve high-risk actions and requires explicit confirmation.
 Prepared mode: <agent type>
 Reason: <brief reason>
 Risk: High, <safety reason>
-Default action: Stop
+Default action: Keep prompt only
 
 ----------------
 1. Execute here
    Execute in this current conversation only after explicit confirmation
 
-2. Modify
-   Tell me what to change; I will revise the prompt and confirm again
+2. Revise prompt
+   Tell me what to change in the prepared prompt
 
 3. Send to subagent
    Dispatch to <agent type> only after explicit confirmation
 
-4. Stop
-   Do not execute or send; keep the prompt for manual use
+4. Keep prompt only
+   Do not execute or send anything
 
-Press Enter for default: Stop
+Press Enter for default: Keep prompt only
 ```
 
 For direct-send-to-subagent mode, report after dispatch instead:

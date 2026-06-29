@@ -60,14 +60,14 @@ Default action: Execute here
 1. Execute here
    Use the prepared prompt in this current conversation
 
-2. Modify
-   Tell me what to change; I will revise the prompt and confirm again
+2. Revise prompt
+   Tell me what to change in the prepared prompt
 
 3. Send to subagent
    Dispatch the prepared prompt to explorer
 
-4. Stop
-   Do not execute or send; keep the prompt for manual use
+4. Keep prompt only
+   Do not execute or send anything
 
 Press Enter for default: Execute here
 You can also reply: 1 / Execute here
@@ -149,9 +149,9 @@ Default action: Execute here
 
 ----------------
 1. Execute here
-2. Modify
+2. Revise prompt
 3. Send to subagent
-4. Stop
+4. Keep prompt only
 ````
 
 ## 3. Missing Target -> Ask For Path
@@ -174,7 +174,7 @@ Example response:
 Which project should the agent inspect? Please provide a project path, repository, folder, or reopen the session in the target project workspace.
 ```
 
-## 4. Safety-Gated Task -> Default To Stop
+## 4. Safety-Gated Task -> Default To Keep Prompt Only
 
 User:
 
@@ -197,22 +197,22 @@ This task may involve high-risk actions and requires explicit confirmation.
 Prepared mode: worker
 Reason: the request touches production deployment and credentials
 Risk: High, production workflow and API key handling
-Default action: Stop
+Default action: Keep prompt only
 
 ----------------
 1. Execute here
    Execute in this current conversation only after explicit confirmation
 
-2. Modify
-   Tell me what to change; I will revise the prompt and confirm again
+2. Revise prompt
+   Tell me what to change in the prepared prompt
 
 3. Send to subagent
    Dispatch to worker only after explicit confirmation
 
-4. Stop
-   Do not execute or send; keep the prompt for manual use
+4. Keep prompt only
+   Do not execute or send anything
 
-Press Enter for default: Stop
+Press Enter for default: Keep prompt only
 ````
 
 ## 5. Direct Send To Subagent -> Dispatch Without Confirmation
@@ -292,7 +292,7 @@ Default action: Execute here
 
 ----------------
 1. Execute here
-2. Modify
+2. Revise prompt
 3. Send to subagent
-4. Stop
+4. Keep prompt only
 ````

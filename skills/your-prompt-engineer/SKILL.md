@@ -95,18 +95,20 @@ For worker prompts, include ownership/scope and this instruction: "You are not a
 When native interactive choices are available, use them. Offer exactly:
 
 - Execute here (default for normal-risk tasks)
-- Modify
+- Revise prompt
 - Send to subagent
-- Stop
+- Keep prompt only
 
-When native choices are unavailable, use a text fallback with the same four actions. For safety-gated tasks, make Stop the default and require an explicit execute or send choice.
+When native choices are unavailable, use a text fallback with the same four actions. For safety-gated tasks, make Keep prompt only the default and require an explicit execute or send choice.
 
 Accept numeric replies and localized equivalents for:
 
 - `1` / Execute here
-- `2` / Modify
+- `2` / Revise prompt
 - `3` / Send to subagent
-- `4` / Stop
+- `4` / Keep prompt only
+
+When the user chooses `1` / Execute here, immediately execute the prepared prompt in the current conversation. Do not first say that you will execute here, and do not mention that you are not sending to a subagent unless the user asks.
 
 ## Host Behavior
 
