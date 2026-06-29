@@ -1,6 +1,6 @@
 # Examples
 
-These examples show the intended behavior of Your Prompt Engineer. The exact wording may vary by host, but the shape should stay consistent: target check, agent routing, prepared prompt, confirmation, and safety handling. Automatic dispatch depends on whether the current host exposes a native delegation tool.
+These examples show the intended behavior of Your Prompt Engineer. The exact wording may vary by host, but the shape should stay consistent: target check, mode routing, prepared prompt, confirmation, and safety handling. Replying `1` executes the prepared prompt in the current conversation. Sending to another agent is a separate explicit choice and depends on whether the host exposes a native delegation tool.
 
 ## 1. Vague Request -> Scout Prompt
 
@@ -15,12 +15,12 @@ Expected behavior:
 - Detect that the request needs context scouting before implementation.
 - Choose `explorer`.
 - Keep the task read-only.
-- Ask for confirmation before dispatch.
+- Ask for confirmation before execution or dispatch.
 
 Example response:
 
 ````text
-I will send this to `explorer` because the request needs a read-only project scout before any implementation work.
+I prepared this as `explorer` because the request needs a read-only project scout before any implementation work.
 
 **Scout Prompt**
 
@@ -51,23 +51,26 @@ Return:
 Do not modify files. Do not run destructive commands. Do not invent requirements that are not supported by the repository; label assumptions clearly.
 ```
 
-Preparing to dispatch to: explorer
+Prepared mode: explorer
 Reason: the request needs a read-only context scout before implementation
 Risk: low
-Default action: Send
+Default action: Execute here
 
 ----------------
-1. Send
-   Send the prepared prompt to explorer
+1. Execute here
+   Use the prepared prompt in this current conversation
 
 2. Modify
    Tell me what to change; I will revise the prompt and confirm again
 
-3. Stop
-   Do not send; keep the prompt for manual use
+3. Send to agent
+   Dispatch the prepared prompt to explorer
 
-Press Enter for default: Send
-You can also reply: 1 / Send
+4. Stop
+   Do not execute or send; keep the prompt for manual use
+
+Press Enter for default: Execute here
+You can also reply: 1 / Execute here
 ````
 
 ## 2. Clear Implementation Request -> Worker Prompt
@@ -83,12 +86,12 @@ Expected behavior:
 - Detect that the task is clear and requires file edits.
 - Choose `worker`.
 - Include file ownership and verification expectations.
-- Ask for confirmation before dispatch.
+- Ask for confirmation before execution or dispatch.
 
 Example response:
 
 ````text
-I will send this to `worker` because the request is clear and requires documentation edits.
+I prepared this as `worker` because the request is clear and requires documentation edits.
 
 **Prepared Prompt**
 
@@ -139,15 +142,16 @@ In your final response, include:
 - Any remaining risks or follow-up needed.
 ```
 
-Preparing to dispatch to: worker
+Prepared mode: worker
 Reason: the request is clear and requires README edits
 Risk: low
-Default action: Send
+Default action: Execute here
 
 ----------------
-1. Send
+1. Execute here
 2. Modify
-3. Stop
+3. Send to agent
+4. Stop
 ````
 
 ## 3. Missing Target -> Ask For Path
@@ -183,32 +187,35 @@ Expected behavior:
 - Detect production/deployment/credential risk.
 - Prepare a careful prompt only if the target is clear.
 - Require explicit confirmation.
-- Do not make Send the default action.
+- Do not make Execute here or Send to agent the default action.
 
 Example confirmation:
 
 ````text
 This task may involve high-risk actions and requires explicit confirmation.
 
-Preparing to dispatch to: worker
+Prepared mode: worker
 Reason: the request touches production deployment and credentials
 Risk: High, production workflow and API key handling
 Default action: Stop
 
 ----------------
-1. Send
-   Dispatch only after explicit confirmation
+1. Execute here
+   Execute in this current conversation only after explicit confirmation
 
 2. Modify
    Tell me what to change; I will revise the prompt and confirm again
 
-3. Stop
-   Do not send; keep the prompt for manual use
+3. Send to agent
+   Dispatch to worker only after explicit confirmation
+
+4. Stop
+   Do not execute or send; keep the prompt for manual use
 
 Press Enter for default: Stop
 ````
 
-## 5. Direct Send -> Dispatch Without Confirmation
+## 5. Direct Send To Agent -> Dispatch Without Confirmation
 
 User:
 
@@ -218,7 +225,7 @@ Use $your-prompt-engineer Send directly: ask an explorer to inspect this project
 
 Expected behavior:
 
-- Detect explicit direct-send intent.
+- Detect explicit direct-send-to-agent intent.
 - Choose `explorer`.
 - Dispatch without the confirmation panel when no safety gate applies.
 - Report the agent/tool used and handle when available.
@@ -278,13 +285,14 @@ Use the currently attached or visible image as the target. Interpret "softer" as
 Return the edited image if the host supports image editing. Otherwise, return a concise set of image-editing instructions that can be used in the available image tool.
 ```
 
-Preparing to dispatch to: default
+Prepared mode: default
 Reason: the task is clear but depends on the attached or visible image context
 Risk: low
-Default action: Send
+Default action: Execute here
 
 ----------------
-1. Send
+1. Execute here
 2. Modify
-3. Stop
+3. Send to agent
+4. Stop
 ````

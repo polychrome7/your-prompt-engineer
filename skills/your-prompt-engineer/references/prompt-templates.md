@@ -247,12 +247,12 @@ This host did not expose an automatic delegation tool. Use the prepared prompt a
 
 ## Confirmation Copy
 
-Use native host choices when available. For normal-risk tasks, make "Send" the default choice; for safety-gated tasks, require explicit send confirmation and do not default to sending.
+Use native host choices when available. For normal-risk tasks, make "Execute here" the default choice. Sending to another agent is a separate action and must not be the default. For safety-gated tasks, require explicit execute/send confirmation and default to Stop.
 
 Use short confirmation copy when native choices are unavailable:
 
 ````text
-I will send this to `<agent type>` because <reason>.
+I prepared this as `<agent type>` because <reason>.
 
 **Prepared Prompt**
 
@@ -260,57 +260,63 @@ I will send this to `<agent type>` because <reason>.
 <prompt>
 ```
 
-Send it?
+What should I do with it?
 ````
 
 Text fallback options:
 
 ```text
-Preparing to dispatch to: <agent type>
+Prepared mode: <agent type>
 Reason: <brief reason>
 Risk: <low|medium|high and reason>
-Default action: Send
+Default action: Execute here
 
 ----------------
-1. Send
-   Send the prepared prompt to <agent type>
+1. Execute here
+   Use the prepared prompt in this current conversation
 
 2. Modify
    Tell me what to change; I will revise the prompt and confirm again
 
-3. Stop
-   Do not send; keep the prompt for manual use
+3. Send to agent
+   Dispatch the prepared prompt to <agent type>
 
-Press Enter for default: Send
-You can also reply: 1 / Send
+4. Stop
+   Do not execute or send; keep the prompt for manual use
+
+Press Enter for default: Execute here
+You can also reply: 1 / Execute here
 ```
 
-Localize these labels to the user's language when useful, but preserve the same three actions and defaults: Send, Modify, Stop.
+Localize these labels to the user's language when useful, but preserve the same four actions and defaults: Execute here, Modify, Send to agent, Stop.
 
 Safety-gated fallback:
 
 ```text
 This task may involve high-risk actions and requires explicit confirmation.
 
-Preparing to dispatch to: <agent type>
+Prepared mode: <agent type>
 Reason: <brief reason>
 Risk: High, <safety reason>
 Default action: Stop
 
 ----------------
-1. Send
-   Dispatch only after explicit confirmation
+1. Execute here
+   Execute in this current conversation only after explicit confirmation
 
 2. Modify
    Tell me what to change; I will revise the prompt and confirm again
 
-3. Stop
-   Do not send; keep the prompt for manual use
+3. Send to agent
+   Dispatch to <agent type> only after explicit confirmation
+
+4. Stop
+   Do not execute or send; keep the prompt for manual use
 
 Press Enter for default: Stop
 ```
 
-For direct-send mode, report after dispatch instead:
+For direct-send-to-agent mode, report after dispatch instead:
 
 ```text
 Sent to `<agent type>` using <host adapter>. Handle: <id if available>.

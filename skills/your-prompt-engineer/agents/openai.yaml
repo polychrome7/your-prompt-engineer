@@ -1,6 +1,6 @@
 interface:
   display_name: "Your Prompt Engineer"
-  short_description: "Prepare prompts for agent handoff"
-  default_prompt: "Use $your-prompt-engineer to turn my rough request into a clear agent prompt and dispatch it."
+  short_description: "Prepare prompts for current-session execution or explicit agent handoff"
+  default_prompt: "Use $your-prompt-engineer to turn my rough request into a clear prompt. Execute it in this conversation unless I explicitly choose agent dispatch."
 policy:
   allow_implicit_invocation: true
