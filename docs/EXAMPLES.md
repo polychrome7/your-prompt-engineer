@@ -1,6 +1,6 @@
 # Examples
 
-These examples show the intended behavior of Your Prompt Engineer. The exact wording may vary by host, but the shape should stay consistent: target check, mode routing, prepared prompt, confirmation, and safety handling. Replying `1` executes the prepared prompt in the current conversation. Sending to another agent is a separate explicit choice and depends on whether the host exposes a native delegation tool.
+These examples show the intended behavior of Your Prompt Engineer. The exact wording may vary by host, but the shape should stay consistent: target check, mode routing, prepared prompt, confirmation, and safety handling. Replying `1` executes the prepared prompt in the current conversation. Sending to a subagent is a separate explicit choice and depends on whether the host exposes a native delegation tool.
 
 ## 1. Vague Request -> Scout Prompt
 
@@ -63,7 +63,7 @@ Default action: Execute here
 2. Modify
    Tell me what to change; I will revise the prompt and confirm again
 
-3. Send to agent
+3. Send to subagent
    Dispatch the prepared prompt to explorer
 
 4. Stop
@@ -150,7 +150,7 @@ Default action: Execute here
 ----------------
 1. Execute here
 2. Modify
-3. Send to agent
+3. Send to subagent
 4. Stop
 ````
 
@@ -187,7 +187,7 @@ Expected behavior:
 - Detect production/deployment/credential risk.
 - Prepare a careful prompt only if the target is clear.
 - Require explicit confirmation.
-- Do not make Execute here or Send to agent the default action.
+- Do not make Execute here or Send to subagent the default action.
 
 Example confirmation:
 
@@ -206,7 +206,7 @@ Default action: Stop
 2. Modify
    Tell me what to change; I will revise the prompt and confirm again
 
-3. Send to agent
+3. Send to subagent
    Dispatch to worker only after explicit confirmation
 
 4. Stop
@@ -215,7 +215,7 @@ Default action: Stop
 Press Enter for default: Stop
 ````
 
-## 5. Direct Send To Agent -> Dispatch Without Confirmation
+## 5. Direct Send To Subagent -> Dispatch Without Confirmation
 
 User:
 
@@ -225,7 +225,7 @@ Use $your-prompt-engineer Send directly: ask an explorer to inspect this project
 
 Expected behavior:
 
-- Detect explicit direct-send-to-agent intent.
+- Detect explicit direct-send-to-subagent intent.
 - Choose `explorer`.
 - Dispatch without the confirmation panel when no safety gate applies.
 - Report the agent/tool used and handle when available.
@@ -293,6 +293,6 @@ Default action: Execute here
 ----------------
 1. Execute here
 2. Modify
-3. Send to agent
+3. Send to subagent
 4. Stop
 ````

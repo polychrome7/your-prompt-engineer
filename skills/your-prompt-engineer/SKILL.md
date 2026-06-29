@@ -9,7 +9,7 @@ description: Use when the user invokes $your-prompt-engineer, uses a host comman
 
 Your Prompt Engineer turns rough requests into clear, dispatch-ready prompts for agent work. It is designed for Codex, Claude Code, and compatible agent hosts that support task, worker, explorer, or subagent delegation.
 
-Use it to prepare the prompt first, choose the right execution mode, validate the task target, show the prepared prompt, and then either execute it in the current conversation or send it to another agent only when the user chooses that route.
+Use it to prepare the prompt first, choose the right execution mode, validate the task target, show the prepared prompt, and then either execute it in the current conversation or send it to a subagent only when the user chooses that route.
 
 The skill supports Chinese, English, and Japanese conversations. Use the user's language for replies, but choose the best execution language for the agent prompt: usually English for technical work and the project or audience language for content work.
 
@@ -20,14 +20,14 @@ Use this skill when the user explicitly invokes `$your-prompt-engineer` or asks 
 - "Write an agent prompt for this request."
 - "Turn this rough request into a worker task prompt."
 - "Prepare a Claude Code task prompt for this bug report."
-- "Refine this prompt and ask before sending it to an agent."
+- "Refine this prompt and ask before using it."
 - "Create a read-only scout prompt for a subagent to inspect this project."
 - "Send this prepared prompt to an explorer after confirmation."
 - "Use the generated prompt here."
 - "$your-prompt-engineer make this image softer."
 - "/your-prompt-engineer make the current image feel softer." if the host maps slash commands to skills.
 
-Equivalent Chinese or Japanese requests should also trigger this skill when they clearly ask for prompt preparation or agent handoff.
+Equivalent Chinese or Japanese requests should also trigger this skill when they clearly ask for prompt preparation or subagent handoff.
 
 Do not trigger implicitly when the user asks only to run, spawn, delegate, inspect, fix, implement, or check something with an agent/subagent and does not mention prompt writing or prompt preparation. In that case, use the host's normal delegation behavior unless the user explicitly invokes this skill.
 
@@ -52,11 +52,11 @@ If the user invokes the skill with no payload, ask for the raw request or object
 1. Decide whether the user wants prompt preparation, agent delegation, or both.
 2. Extract the goal, target, expected output, constraints, acceptance signal, risk level, language, host, and agent type.
 3. Resolve the target before writing the prompt.
-4. Choose one mode: confirm-first, direct-send-to-agent, or scout-first.
+4. Choose one mode: confirm-first, direct-send-to-subagent, or scout-first.
 5. Draft the prompt with `references/prompt-templates.md`.
-6. Show the prepared prompt and ask whether to execute it here, modify it, send it to another agent, or stop unless direct-send-to-agent mode applies.
-7. If the user chooses current-session execution, use the prepared prompt as the active instruction in the current conversation. Do not spawn or dispatch another agent.
-8. If the user chooses agent dispatch, use the current host's native agent/task mechanism when available and report the agent type/tool plus id or task handle.
+6. Show the prepared prompt and ask whether to execute it here, modify it, send it to a subagent, or stop unless direct-send-to-subagent mode applies.
+7. If the user chooses current-session execution, use the prepared prompt as the active instruction in the current conversation. Do not spawn or dispatch a subagent.
+8. If the user chooses subagent dispatch, use the current host's native agent/task mechanism when available and report the agent type/tool plus id or task handle.
 
 ## Target Resolution
 
@@ -74,8 +74,8 @@ Which project should the agent inspect? Please provide a project path, repositor
 
 ## Dispatch Modes
 
-- Confirm-first: default. Prepare the prompt, show it, and ask whether to execute here, modify, send to agent, or stop.
-- Direct-send-to-agent: use only when the user explicitly says "send to an agent directly", "auto-dispatch to an agent", or equivalent localized phrasing.
+- Confirm-first: default. Prepare the prompt, show it, and ask whether to execute here, modify, send to subagent, or stop.
+- Direct-send-to-subagent: use only when the user explicitly says "send to a subagent directly", "auto-dispatch to a subagent", or equivalent localized phrasing.
 - Scout-first: use when the request is vague but current context can be investigated safely. Prepare a read-only explorer prompt before preparing an execution prompt.
 
 Always require explicit confirmation before executing or dispatching tasks that may affect production systems, deployments, accounts, billing, credentials, external APIs, sensitive data, legal/compliance content, or broad multi-file changes.
@@ -96,7 +96,7 @@ When native interactive choices are available, use them. Offer exactly:
 
 - Execute here (default for normal-risk tasks)
 - Modify
-- Send to agent
+- Send to subagent
 - Stop
 
 When native choices are unavailable, use a text fallback with the same four actions. For safety-gated tasks, make Stop the default and require an explicit execute or send choice.
@@ -105,16 +105,16 @@ Accept numeric replies and localized equivalents for:
 
 - `1` / Execute here
 - `2` / Modify
-- `3` / Send to agent
+- `3` / Send to subagent
 - `4` / Stop
 
 ## Host Behavior
 
 Use the current host's native delegation mechanism. Do not claim a dispatch happened unless a tool call or host action actually succeeded.
 
-- Codex: use available multi-agent tools only after the user chooses Send to agent or explicitly requests direct agent dispatch.
-- Claude Code: use available Task/subagent mechanisms only after the user chooses Send to agent or explicitly requests direct agent dispatch.
-- Compatible hosts: inspect available tools and use native task, worker, explorer, or subagent dispatch only when the user chooses agent dispatch.
+- Codex: use available multi-agent tools only after the user chooses Send to subagent or explicitly requests direct subagent dispatch.
+- Claude Code: use available Task/subagent mechanisms only after the user chooses Send to subagent or explicitly requests direct subagent dispatch.
+- Compatible hosts: inspect available tools and use native task, worker, explorer, or subagent dispatch only when the user chooses subagent dispatch.
 - No dispatch tool: provide the prepared prompt and clear handoff instructions instead of claiming it was sent.
 
 Do not override model, reasoning effort, or service tier unless the user asks or the task clearly requires it.

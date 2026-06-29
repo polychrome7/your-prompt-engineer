@@ -35,7 +35,7 @@ Return:
 - A recommended worker prompt for the top improvements.
 ```
 
-The point is not just "write a prompt." The point is a repeatable execution flow: clear target, right mode, safe constraints, expected output, and confirmation before running it here or sending it to another agent.
+The point is not just "write a prompt." The point is a repeatable execution flow: clear target, right mode, safe constraints, expected output, and confirmation before running it here or sending it to a subagent.
 
 ## What It Does
 
@@ -45,7 +45,7 @@ The point is not just "write a prompt." The point is a repeatable execution flow
 - Uses scout-first behavior for vague tasks.
 - Shows the prepared prompt before execution by default.
 - Executes in the current conversation by default when the user confirms with `1`.
-- Sends to another agent only when explicitly selected or requested.
+- Sends to a subagent only when explicitly selected or requested.
 - Treats text after explicit invocation as the raw request, even when it is fragmentary.
 - Adds safety gates for production, billing, secrets, external APIs, sensitive data, and broad changes.
 - Supports Chinese, English, and Japanese user-facing flows.
@@ -95,7 +95,7 @@ If the host maps slash commands to skills, this style may also work:
 
 Natural-language invocation may work in hosts that support implicit personal skill discovery, but it is not guaranteed. If the host does not load the skill implicitly, it may simply answer as a normal agent.
 
-Codex and Claude Code are first-class targets. Other compatible hosts can still use the prepared prompt and confirmation workflow. The default confirmed action is current-session execution; automatic dispatch to another agent depends on whether the host exposes a native delegation tool and the user explicitly chooses it.
+Codex and Claude Code are first-class targets. Other compatible hosts can still use the prepared prompt and confirmation workflow. The default confirmed action is current-session execution; automatic dispatch to a subagent depends on whether the host exposes a native delegation tool and the user explicitly chooses it.
 
 ## Installation
 
@@ -135,7 +135,7 @@ Prepare a worker task:
 Use $your-prompt-engineer Turn this request into an agent task: ask a worker to update the README with installation and startup instructions.
 ```
 
-Directly dispatch a read-only scout task to another agent:
+Directly dispatch a read-only scout task to a subagent:
 
 ```text
 Use $your-prompt-engineer Send directly: ask an explorer to inspect this project for test coverage risks without modifying files.
@@ -157,7 +157,7 @@ Use $your-prompt-engineer 帮我写个 prompt，让 agent 检查这个项目的�
 Use $your-prompt-engineer agent に渡すプロンプトを書いて：このプロジェクトの改善点を読み取り専用で調査する
 ```
 
-See [docs/EXAMPLES.md](docs/EXAMPLES.md) for full example flows, including scout-first, worker, missing-target, safety-gated, fragmentary-payload, and explicit direct-send-to-agent scenarios.
+See [docs/EXAMPLES.md](docs/EXAMPLES.md) for full example flows, including scout-first, worker, missing-target, safety-gated, fragmentary-payload, and explicit direct-send-to-subagent scenarios.
 
 ## Confirmation Behavior
 
@@ -180,7 +180,7 @@ Default action: Execute here
 2. Modify
    Tell me what to change; I will revise the prompt and confirm again
 
-3. Send to agent
+3. Send to subagent
    Dispatch the prepared prompt to explorer
 
 4. Stop
@@ -205,7 +205,7 @@ Which project should the agent inspect? Please provide a project path, repositor
 ## Limitations
 
 - The skill cannot create UI controls by itself. It can only ask the host to use native choices when the host supports them.
-- Automatic dispatch to another agent depends on the host exposing tools such as Codex multi-agent tools, Claude Code task/subagent tools, or another native delegation mechanism.
+- Automatic dispatch to a subagent depends on the host exposing tools such as Codex multi-agent tools, Claude Code task/subagent tools, or another native delegation mechanism.
 - Natural-language implicit triggering is host-dependent. Explicit `$your-prompt-engineer` invocation is the reliable path.
 - Slash-command invocation such as `/your-prompt-engineer` only works when the host maps slash commands to skills.
 - Explicit invocation with no payload starts no guaranteed persistent mode. The skill should ask for the raw request or object to transform.
@@ -224,7 +224,7 @@ Which project should the agent inspect? Please provide a project path, repositor
 Good contribution areas:
 
 - `good first issue`: small copy, examples, docs, or test prompt improvements
-- `host-adapter`: support or document another agent host
+- `host-adapter`: support or document another compatible host
 - `prompt-template`: improve prompt templates for a repeatable workflow
 
 Please keep the skill itself concise. Put detailed examples and host-specific notes in `references/` when they would make `SKILL.md` too large.

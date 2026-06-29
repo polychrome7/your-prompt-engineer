@@ -247,7 +247,7 @@ This host did not expose an automatic delegation tool. Use the prepared prompt a
 
 ## Confirmation Copy
 
-Use native host choices when available. For normal-risk tasks, make "Execute here" the default choice. Sending to another agent is a separate action and must not be the default. For safety-gated tasks, require explicit execute/send confirmation and default to Stop.
+Use native host choices when available. For normal-risk tasks, make "Execute here" the default choice. Sending to a subagent is a separate action and must not be the default. For safety-gated tasks, require explicit execute/send confirmation and default to Stop.
 
 Use short confirmation copy when native choices are unavailable:
 
@@ -278,7 +278,7 @@ Default action: Execute here
 2. Modify
    Tell me what to change; I will revise the prompt and confirm again
 
-3. Send to agent
+3. Send to subagent
    Dispatch the prepared prompt to <agent type>
 
 4. Stop
@@ -288,7 +288,7 @@ Press Enter for default: Execute here
 You can also reply: 1 / Execute here
 ```
 
-Localize these labels to the user's language when useful, but preserve the same four actions and defaults: Execute here, Modify, Send to agent, Stop.
+Localize these labels to the user's language when useful, but preserve the same four actions and defaults: Execute here, Modify, Send to subagent, Stop.
 
 Safety-gated fallback:
 
@@ -307,7 +307,7 @@ Default action: Stop
 2. Modify
    Tell me what to change; I will revise the prompt and confirm again
 
-3. Send to agent
+3. Send to subagent
    Dispatch to <agent type> only after explicit confirmation
 
 4. Stop
@@ -316,7 +316,7 @@ Default action: Stop
 Press Enter for default: Stop
 ```
 
-For direct-send-to-agent mode, report after dispatch instead:
+For direct-send-to-subagent mode, report after dispatch instead:
 
 ```text
 Sent to `<agent type>` using <host adapter>. Handle: <id if available>.
