@@ -236,7 +236,44 @@ Example post-dispatch response:
 Sent to `explorer` using Codex multi-agent tools. Handle: <agent id>
 ```
 
-## 6. Fragmentary Invocation Payload -> Structured Prompt
+## 6. Revise Prompt -> Show Choices Again
+
+User:
+
+```text
+2
+Make it more concise and keep the tone warmer.
+```
+
+Expected behavior:
+
+- Revise the prepared prompt using the user's requested changes.
+- Show the revised prompt.
+- Show the same `1/2/3/4` choices again.
+- Keep the loop active until the user chooses `1`, `3`, or `4`.
+
+Example response ending:
+
+````text
+**Revised Prompt**
+
+```text
+<revised prompt>
+```
+
+Prepared mode: default
+Reason: revised according to the requested tone and length
+Risk: low
+Default action: Execute here
+
+----------------
+1. Execute here
+2. Revise prompt
+3. Send to subagent
+4. Keep prompt only
+````
+
+## 7. Fragmentary Invocation Payload -> Structured Prompt
 
 User:
 

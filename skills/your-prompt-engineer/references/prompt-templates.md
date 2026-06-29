@@ -290,6 +290,8 @@ You can also reply: 1 / Execute here
 
 Localize these labels to the user's language when useful, but preserve the same four actions and defaults: Execute here, Revise prompt, Send to subagent, Keep prompt only.
 
+If the user chooses Revise prompt, produce the revised prompt and immediately show the same confirmation block again. Do not stop after revising. The loop ends only when the user chooses Execute here, Send to subagent, or Keep prompt only.
+
 Safety-gated fallback:
 
 ```text

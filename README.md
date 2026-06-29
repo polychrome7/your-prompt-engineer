@@ -194,6 +194,8 @@ For safety-gated tasks, the default action changes to `Keep prompt only`.
 
 After `1`, the skill should start executing the prepared prompt directly instead of announcing execution mechanics.
 
+After `2`, the skill should revise the prompt and show the same `1/2/3/4` choices again. The loop continues until the user chooses `1`, `3`, or `4`.
+
 ## Target Resolution
 
 The skill should not treat "this project" as valid unless the current workspace looks like a real project or the user provides a concrete target.

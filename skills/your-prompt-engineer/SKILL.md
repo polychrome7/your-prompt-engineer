@@ -110,6 +110,8 @@ Accept numeric replies and localized equivalents for:
 
 When the user chooses `1` / Execute here, immediately execute the prepared prompt in the current conversation. Do not first say that you will execute here, and do not mention that you are not sending to a subagent unless the user asks.
 
+When the user chooses `2` / Revise prompt, ask what to change if they did not already say it, revise the prepared prompt, then show the revised prompt with the same 1/2/3/4 choices again. Keep this confirmation loop active until the user chooses `1`, `3`, or `4`.
+
 ## Host Behavior
 
 Use the current host's native delegation mechanism. Do not claim a dispatch happened unless a tool call or host action actually succeeded.
